@@ -118,6 +118,8 @@ type listenerSpec struct {
 	// is reachable. If zero or not specified, the first available port
 	// is used.
 	Port int32
+
+	NodePort int32
 }
 
 // Encapsulates probe specs as defined by the user in the kubernetes config.

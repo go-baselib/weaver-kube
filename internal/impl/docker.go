@@ -119,11 +119,11 @@ downloaded and installed in the container. Do you want to proceed? [Y/n] `)
 		if text != "" && text != "y" && text != "Y" {
 			return "", fmt.Errorf("user bailed out")
 		}
-		install = "github.com/ServiceWeaver/weaver-kube/cmd/weaver-kube@latest"
+		install = "github.com/go-baselib/weaver-kube/cmd/weaver-kube@latest"
 	} else {
 		// Install the currently running version of "weaver-kube" in the
 		// container.
-		install = "github.com/ServiceWeaver/weaver-kube/cmd/weaver-kube@" + toolVersion
+		install = "github.com/go-baselib/weaver-kube/cmd/weaver-kube@" + toolVersion
 	}
 
 	// Create a Dockerfile in workDir/.
@@ -134,7 +134,7 @@ downloaded and installed in the container. Do you want to proceed? [Y/n] `)
 	var template = template.Must(template.New("Dockerfile").Parse(`
 {{if .Install }}
 FROM golang:bullseye as builder
-RUN go install "{{.Install}}"
+RUN go env -w GOPROXY=https://goproxy.cn,direct && go install "{{.Install}}"
 {{end}}
 
 FROM ubuntu:rolling

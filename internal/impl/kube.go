@@ -74,6 +74,8 @@ type listener struct {
 	serviceName string // Kubernetes service name
 	port        int32  // port on which listener listens
 	public      bool   // is the listener publicly accessible
+
+	nodePort int32
 }
 
 // buildDeployment generates a Kubernetes Deployment for a group.
@@ -170,6 +172,9 @@ func buildListenerService(d deployment, g group, lis listener) (*corev1.Service,
 	serviceType := "ClusterIP"
 	if lis.public {
 		serviceType = "LoadBalancer"
+		if lis.nodePort > 0 {
+			serviceType = "NodePort"
+		}
 	}
 
 	return &corev1.Service{
@@ -199,6 +204,7 @@ func buildListenerService(d deployment, g group, lis listener) (*corev1.Service,
 					Port:       servicePort,
 					Protocol:   "TCP",
 					TargetPort: intstr.IntOrString{IntVal: lis.port},
+					NodePort:   lis.port,
 				},
 			},
 		},
@@ -737,6 +743,9 @@ func newListener(depId string, config *kubeConfig, name string) listener {
 		if l.Port != 0 {
 			lis.port = l.Port
 		}
+
+		lis.nodePort = l.NodePort
+
 		return lis
 	}
 	return lis
