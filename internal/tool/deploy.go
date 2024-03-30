@@ -19,8 +19,8 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/ServiceWeaver/weaver-kube/internal/impl"
 	"github.com/ServiceWeaver/weaver/runtime/tool"
+	"github.com/go-baselib/weaver-kube/internal/impl"
 )
 
 var (

@@ -1,4 +1,4 @@
-module github.com/ServiceWeaver/weaver-kube
+module github.com/go-baselib/weaver-kube
 
 go 1.21
 
