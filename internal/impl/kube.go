@@ -177,6 +177,18 @@ func buildListenerService(d deployment, g group, lis listener) (*corev1.Service,
 		}
 	}
 
+	var genServicePort = func(lis listener) corev1.ServicePort {
+		var sp = corev1.ServicePort{
+			Port:       servicePort,
+			Protocol:   "TCP",
+			TargetPort: intstr.IntOrString{IntVal: lis.port},
+		}
+		if lis.nodePort > 0 {
+			sp.NodePort = lis.nodePort
+		}
+		return sp
+	}
+
 	return &corev1.Service{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "v1",
@@ -200,12 +212,7 @@ func buildListenerService(d deployment, g group, lis listener) (*corev1.Service,
 				"serviceweaver/name": deploymentName(d.app.Name, g.Name, d.deploymentId),
 			},
 			Ports: []corev1.ServicePort{
-				{
-					Port:       servicePort,
-					Protocol:   "TCP",
-					TargetPort: intstr.IntOrString{IntVal: lis.port},
-					NodePort:   lis.nodePort,
-				},
+				genServicePort(lis),
 			},
 		},
 	}, nil
@@ -744,7 +751,9 @@ func newListener(depId string, config *kubeConfig, name string) listener {
 			lis.port = l.Port
 		}
 
-		lis.nodePort = l.NodePort
+		if l.NodePort > 0 {
+			lis.nodePort = l.NodePort
+		}
 
 		return lis
 	}
